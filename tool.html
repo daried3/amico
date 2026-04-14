@@ -179,6 +179,20 @@ nav{
 }
 .affiliate-note{font-family:'Caveat',cursive;font-size:11px;color:#aaa}
 
+/* 書籍バナー */
+.book-scroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none;-ms-overflow-style:none}
+.book-scroll::-webkit-scrollbar{display:none}
+.book-card{flex-shrink:0;width:110px;background:var(--paper);border:3px solid var(--ink);border-radius:14px;box-shadow:3px 4px 0 var(--ink);overflow:hidden;text-decoration:none;color:var(--ink);transition:transform .1s,box-shadow .1s;display:flex;flex-direction:column}
+.book-card:hover{transform:translate(-2px,-3px);box-shadow:5px 7px 0 var(--ink)}
+.book-card:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
+.book-img-wrap{width:100%;height:130px;border-bottom:2.5px solid var(--ink);background:var(--bg);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.book-img-wrap img{width:100%;height:100%;object-fit:cover}
+.book-emoji{font-size:2.5rem}
+.book-body{padding:6px 8px 8px;flex:1;display:flex;flex-direction:column;gap:3px}
+.book-title{font-family:'Fredoka One',cursive;font-size:10px;color:var(--ink);line-height:1.4}
+.book-amz{font-size:9px;padding:2px 6px;border-radius:4px;background:#FF9900;color:#fff;border:1.5px solid var(--ink);align-self:flex-start;margin-top:4px;font-family:'Fredoka One',cursive}
+.book-note{font-family:'Caveat',cursive;font-size:11px;color:#aaa;margin-top:6px}
+
 /* YARN */
 .yarn-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:.6rem}
 .yarn-card{
@@ -292,7 +306,7 @@ nav{
         <span class="hdeco">★</span>
       </div>
     </div>
-    <div class="header-sub">✦ 針と糸の変換ツール · 世界の手芸をつなぐ ✦</div>
+    <div class="header-sub">世界の手芸をつなぐ</div>
   </div>
 
   <!-- 針サイズ変換 -->
@@ -316,7 +330,7 @@ nav{
     </div>
     <div class="chip-row" id="chipRow"></div>
     <button class="table-toggle" onclick="toggleTable()">
-      <span id="tableArrow">▼</span> 全サイズ一覧を見る（JP / mm / US / UK / KR）
+      <span id="tableArrow">▼</span> 全サイズ一覧を見る
     </button>
     <div class="full-table" id="fullTable">
       <table class="conv-table">
@@ -350,6 +364,18 @@ nav{
       </a>
       <span class="affiliate-note">※ Amazonアソシエイトプログラムによる広告リンクです</span>
     </div>
+  </div>
+
+  <!-- 編み物本バナー -->
+  <div class="sec-wrap">
+    <div class="sec-label" style="background:var(--c6)">📚 おすすめの編み物本</div>
+  </div>
+  <div class="card">
+    <div class="tape" style="background:rgba(151,71,255,.35);right:30px;transform:rotate(2deg)"></div>
+    <div class="book-scroll" id="bookScroll">
+      <!-- PA-API取得後に動的生成。現在は手動カード -->
+    </div>
+    <p class="book-note">※ Amazonアソシエイトプログラムによる広告リンクです</p>
   </div>
 
   <!-- 段数カウンター -->
@@ -530,6 +556,50 @@ function upd(dir){
 function cntUp(){ cnt++; upd(1) }
 function cntDown(){ if(cnt > 0) cnt--; upd(-1) }
 function cntReset(){ cnt = 0; upd(0) }
+
+
+// ===== 書籍バナー（PA-API Worker連携） =====
+const WORKER_URL = 'https://amico-api.darie0726.workers.dev';
+
+async function loadBooks(keywords) {
+  keywords = keywords || '編み物 本';
+  const scroll = document.getElementById('bookScroll');
+  scroll.innerHTML = '<div style="font-family:Caveat,cursive;font-size:14px;color:#aaa;padding:1rem">📚 読み込み中...</div>';
+  try {
+    const res = await fetch(WORKER_URL + '?keywords=' + encodeURIComponent(keywords));
+    const data = await res.json();
+    scroll.innerHTML = '';
+    if (!data.items || data.items.length === 0) {
+      scroll.innerHTML = '<div style="font-family:Caveat,cursive;font-size:14px;color:#aaa;padding:1rem">本が見つかりませんでした</div>';
+      return;
+    }
+    data.items.forEach(function(book) {
+      const a = document.createElement('a');
+      a.className = 'book-card';
+      a.href = book.url;
+      a.target = '_blank';
+      a.rel = 'noopener sponsored';
+      const imgHtml = book.image
+        ? '<img src="' + book.image + '" alt="' + book.title + '" loading="lazy" style="width:100%;height:100%;object-fit:cover">'
+        : '<span class="book-emoji">📚</span>';
+      const priceHtml = book.price
+        ? '<div style="font-family:Caveat,cursive;font-size:11px;color:var(--c1);font-weight:700">' + book.price + '</div>'
+        : '';
+      a.innerHTML = '<div class="book-img-wrap">' + imgHtml + '</div>'
+        + '<div class="book-body">'
+        + '<div class="book-title">' + book.title + '</div>'
+        + priceHtml
+        + '<span class="book-amz">Amazon</span>'
+        + '</div>';
+      scroll.appendChild(a);
+    });
+  } catch(e) {
+    scroll.innerHTML = '<div style="font-family:Caveat,cursive;font-size:13px;color:#aaa;padding:1rem">読み込みに失敗しました</div>';
+  }
+}
+
+// ページ読み込み時に書籍を取得
+loadBooks('編み物 本');
 
 // ===== PWA =====
 if('serviceWorker' in navigator){
