@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Amico — 針と糸の変換ツール。棒針・かぎ針の号数をmm・US・UKに瞬時に変換。毛糸の太さガイドと段数カウンター付き。世界の手芸パターン対応。">
+<meta name="theme-color" content="#1A1028">
+<meta property="og:title" content="Amico — 針と糸の変換ツール">
+<meta property="og:description" content="棒針・かぎ針の号数変換、毛糸の太さガイド、段数カウンター。世界の手芸パターン対応。">
+<meta property="og:type" content="website">
+<link rel="manifest" href="manifest.json">
+<title>Amico — 針と糸の変換ツール</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Caveat:wght@600;700&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FFF8F0;
+  --c1:#FF4E4E;--c2:#FFCE00;--c3:#3BB86A;
+  --c4:#2F7FFF;--c5:#FF5CA8;--c6:#9747FF;
+  --ink:#1A1028;--paper:#FFFEF9;
+}
+body{background:var(--bg);font-family:'Nunito',sans-serif;color:var(--ink);min-height:100vh;overflow-x:hidden}
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:radial-gradient(circle,#1A102818 1.5px,transparent 1.5px);
+  background-size:18px 18px;pointer-events:none;z-index:0;
+}
+
+/* NAV */
+nav{
+  position:sticky;top:0;z-index:100;
+  background:var(--ink);padding:.6rem 1.25rem;
+  display:flex;align-items:center;justify-content:space-between;
+  box-shadow:0 3px 0 var(--c4);
+}
+.nav-logo{font-family:'Fredoka One',cursive;font-size:1.4rem;display:flex;gap:3px;text-decoration:none}
+.nl{display:inline-block;transition:transform .15s}
+.nl:hover{transform:rotate(-10deg) scale(1.2)}
+.nav-tag{font-family:'Caveat',cursive;font-size:12px;color:#aaa;letter-spacing:.04em}
+
+.container{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:1.25rem 1rem 5rem}
+
+/* HEADER CARD */
+.header-card{
+  background:var(--paper);border:3px solid var(--ink);
+  border-radius:20px;box-shadow:5px 5px 0 var(--ink);
+  padding:1rem 1.1rem .9rem;margin-bottom:1.1rem;
+  position:relative;overflow:hidden;
+}
+.header-card::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(-55deg,var(--c2) 0,var(--c2) 3px,transparent 3px,transparent 18px);
+  opacity:.06;pointer-events:none;
+}
+.sticker-letters{display:flex;gap:5px;align-items:center;margin-bottom:.5rem;flex-wrap:wrap;position:relative;z-index:1}
+.sl{
+  font-family:'Fredoka One',cursive;font-size:1.8rem;line-height:1;
+  width:46px;height:46px;border:3px solid var(--ink);
+  box-shadow:3px 3px 0 var(--ink);
+  display:inline-flex;align-items:center;justify-content:center;
+  transition:transform .15s;cursor:default;
+  animation:stickerIn .4s cubic-bezier(.34,1.8,.64,1) both;
+}
+.sl:hover{transform:rotate(-8deg) scale(1.12)}
+.sl-A{background:var(--c1);color:#fff;border-radius:12px 8px 14px 10px/10px 14px 8px 12px}
+.sl-M{background:var(--c2);color:var(--ink);border-radius:50%}
+.sl-I{background:var(--c3);color:#fff;border-radius:6px;transform:rotate(-3deg)}
+.sl-C{background:var(--c4);color:#fff;border-radius:14px 6px 12px 8px/8px 12px 6px 14px}
+.sl-O{background:var(--c5);color:#fff;border-radius:50% 20% 50% 20%}
+.header-deco{margin-left:auto;display:flex;gap:6px;align-items:center}
+.hdeco{font-size:18px;animation:spin 6s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hdeco:nth-child(2){animation-direction:reverse;animation-duration:4s}
+.header-sub{font-family:'Caveat',cursive;font-size:15px;color:#777;padding-left:2px;position:relative;z-index:1}
+
+/* SEC LABEL */
+.sec-wrap{display:flex;align-items:center;gap:8px;margin-bottom:.7rem}
+.sec-label{
+  font-family:'Fredoka One',cursive;font-size:14px;
+  background:var(--ink);color:var(--c2);
+  padding:4px 16px;border-radius:20px;
+  display:inline-flex;align-items:center;gap:6px;
+}
+
+/* CARD */
+.card{
+  background:var(--paper);border:3px solid var(--ink);
+  border-radius:18px;padding:1.1rem;
+  margin-bottom:1.1rem;box-shadow:5px 5px 0 var(--ink);
+  position:relative;
+  animation:popIn .35s cubic-bezier(.34,1.56,.64,1) both;
+}
+.tape{
+  position:absolute;top:-10px;
+  width:38px;height:18px;
+  border:2px solid var(--ink);border-radius:4px;
+}
+
+/* CONVERTER */
+.convert-grid{display:grid;grid-template-columns:1fr 52px 1fr;gap:8px;align-items:end;margin:.75rem 0 .5rem}
+.input-wrap{display:flex;flex-direction:column;gap:5px}
+.input-label{
+  font-family:'Fredoka One',cursive;font-size:12px;letter-spacing:.04em;
+  padding:3px 12px;border:2.5px solid var(--ink);
+  display:inline-block;align-self:flex-start;
+}
+.pixel-input{
+  width:100%;background:var(--bg);
+  border:3px solid var(--ink);border-radius:12px;
+  padding:10px 14px;
+  font-family:'Caveat',cursive;font-size:22px;font-weight:700;
+  color:var(--ink);outline:none;
+  transition:box-shadow .12s,background .12s;
+}
+.pixel-input:focus{box-shadow:3px 3px 0 var(--ink);background:var(--paper)}
+.pixel-input::placeholder{color:#ccc}
+
+.swap-btn{
+  background:#fff;border:3px solid var(--ink);border-radius:12px;
+  width:52px;height:52px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;box-shadow:3px 4px 0 var(--ink);
+  transition:transform .1s,box-shadow .1s,background .1s;flex-shrink:0;
+}
+.swap-btn:hover{transform:translate(-1px,-2px);box-shadow:5px 6px 0 var(--ink);background:var(--c2)}
+.swap-btn:active{transform:translate(2px,3px);box-shadow:0 0 0 var(--ink)}
+.swap-btn svg{width:22px;height:22px;stroke:var(--ink);fill:none;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+
+.chip-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:.85rem}
+.chip{
+  font-family:'Fredoka One',cursive;font-size:14px;
+  padding:5px 14px;border-radius:20px;
+  border:3px solid var(--ink);box-shadow:2px 3px 0 var(--ink);
+  display:flex;align-items:center;gap:5px;
+}
+
+/* 換算表 */
+.table-toggle{
+  font-family:'Fredoka One',cursive;font-size:13px;
+  color:var(--c4);cursor:pointer;
+  margin-top:.75rem;display:inline-flex;align-items:center;gap:5px;
+  background:none;border:none;padding:0;
+}
+.table-toggle:hover{text-decoration:underline}
+.full-table{display:none;margin-top:.75rem;overflow-x:auto}
+.full-table.show{display:block}
+.conv-table{width:100%;border-collapse:collapse;font-size:13px}
+.conv-table th{
+  font-family:'Fredoka One',cursive;font-size:11px;
+  background:var(--ink);color:var(--c2);
+  padding:6px 8px;text-align:center;
+}
+.conv-table td{
+  font-family:'Caveat',cursive;font-size:14px;font-weight:700;
+  padding:6px 8px;text-align:center;
+}
+.conv-table tr:nth-child(even) td{background:var(--bg)}
+.conv-table tr:nth-child(odd) td{background:var(--paper)}
+.conv-table tr.highlight td{background:#FFD93D44}
+
+/* アフィリエイト */
+.affiliate-row{display:none;flex-direction:column;gap:6px;margin-top:.85rem}
+.affiliate-row.show{display:flex}
+.affiliate-btn{
+  font-family:'Fredoka One',cursive;font-size:13px;
+  padding:9px 16px;border-radius:12px;
+  border:2.5px solid var(--ink);box-shadow:3px 3px 0 var(--ink);
+  display:flex;align-items:center;gap:8px;
+  text-decoration:none;color:var(--ink);background:var(--paper);
+  transition:transform .1s,box-shadow .1s;
+}
+.affiliate-btn:hover{transform:translate(-1px,-2px);box-shadow:5px 5px 0 var(--ink)}
+.affiliate-btn:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
+.amz-badge{
+  background:#FF9900;color:#fff;
+  font-size:10px;padding:2px 7px;border-radius:6px;
+  border:1.5px solid var(--ink);flex-shrink:0;
+}
+.affiliate-note{font-family:'Caveat',cursive;font-size:11px;color:#aaa}
+
+/* YARN */
+.yarn-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:.6rem}
+.yarn-card{
+  border:3px solid var(--ink);border-radius:14px;
+  padding:.7rem .4rem;text-align:center;cursor:pointer;
+  box-shadow:3px 4px 0 var(--ink);background:var(--paper);
+  transition:transform .1s,box-shadow .1s;
+}
+.yarn-card:hover{transform:translate(-2px,-3px);box-shadow:5px 7px 0 var(--ink)}
+.yarn-card:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
+.yarn-card.active{outline:3.5px solid var(--c1);outline-offset:3px}
+.yarn-swatch{
+  width:44px;height:44px;margin:0 auto 6px;
+  border:3px solid var(--ink);border-radius:12px;
+  position:relative;overflow:hidden;
+}
+.yarn-swatch::after{
+  content:'';position:absolute;inset:0;
+  background-image:repeating-linear-gradient(-45deg,rgba(255,255,255,0) 0,rgba(255,255,255,0) 4px,rgba(255,255,255,.35) 4px,rgba(255,255,255,.35) 5px);
+}
+.yarn-name{font-family:'Fredoka One',cursive;font-size:12px;color:var(--ink);line-height:1.2}
+.yarn-mm{font-family:'Caveat',cursive;font-size:12px;color:#888;margin-top:1px}
+.yarn-detail{
+  margin-top:.75rem;padding:.65rem 1rem;
+  border:3px solid var(--ink);border-radius:14px;
+  font-family:'Caveat',cursive;font-size:15px;font-weight:700;
+  color:var(--ink);box-shadow:3px 3px 0 var(--ink);display:none;
+}
+.yarn-detail.show{display:block}
+
+/* COUNTER */
+.counter-wrap{text-align:center;padding:.5rem 0 .25rem}
+.counter-stage{
+  font-family:'Fredoka One',cursive;font-size:5.5rem;
+  color:var(--ink);line-height:1;
+  text-shadow:5px 5px 0 var(--c5),8px 8px 0 rgba(0,0,0,.08);
+  margin-bottom:.85rem;display:inline-block;transition:transform .15s;
+}
+.counter-row{display:flex;justify-content:center;align-items:center;gap:14px}
+.cnt-btn{
+  font-family:'Fredoka One',cursive;
+  border:3.5px solid var(--ink);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .1s,box-shadow .1s;
+}
+.cnt-btn:active{transform:translate(2px,3px)!important;box-shadow:0 0 0 var(--ink)!important}
+.cnt-minus{width:48px;height:48px;font-size:26px;background:var(--c1);color:#fff;border-radius:14px;box-shadow:4px 4px 0 var(--ink)}
+.cnt-minus:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
+.cnt-reset{width:42px;height:42px;font-size:18px;background:var(--paper);color:var(--ink);border-radius:12px;box-shadow:3px 4px 0 var(--ink)}
+.cnt-reset:hover{transform:translate(-1px,-2px);box-shadow:5px 6px 0 var(--ink)}
+.cnt-plus{width:68px;height:68px;font-size:36px;background:var(--c3);color:#fff;border-radius:20px;box-shadow:5px 5px 0 var(--ink)}
+.cnt-plus:hover{transform:translate(-2px,-3px);box-shadow:8px 8px 0 var(--ink)}
+
+/* BOTTOM NAV */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
+  display:flex;justify-content:space-around;align-items:center;
+  background:var(--ink);border-top:3px solid var(--ink);
+  padding:.75rem .5rem calc(.75rem + env(safe-area-inset-bottom));
+  box-shadow:0 -3px 0 var(--c4);
+}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;text-decoration:none}
+.nav-pip{
+  width:36px;height:36px;border-radius:10px;border:2.5px solid #444;
+  display:grid;place-items:center;font-size:18px;
+  transition:background .15s,transform .1s;
+}
+.nav-item.active .nav-pip{background:var(--c5);border-color:var(--c5);transform:rotate(-5deg)}
+.nav-item:not(.active) .nav-pip{background:#2a2040;color:#888}
+.nav-label{font-family:'Fredoka One',cursive;font-size:10px;letter-spacing:.03em}
+.nav-item.active .nav-label{color:#fff}
+.nav-item:not(.active) .nav-label{color:#666}
+
+@keyframes stickerIn{0%{opacity:0;transform:scale(.4) rotate(-20deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+@keyframes popIn{0%{opacity:0;transform:scale(.9)}100%{opacity:1;transform:scale(1)}}
+.card:nth-child(1){animation-delay:.05s}
+.card:nth-child(2){animation-delay:.1s}
+.card:nth-child(3){animation-delay:.15s}
+
+@media(max-width:400px){
+  .sl{width:38px;height:38px;font-size:1.4rem}
+  .convert-grid{grid-template-columns:1fr 44px 1fr}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <span class="nl" style="color:var(--c1)">A</span>
+    <span class="nl" style="color:var(--c2)">m</span>
+    <span class="nl" style="color:var(--c3)">i</span>
+    <span class="nl" style="color:var(--c4)">c</span>
+    <span class="nl" style="color:var(--c5)">o</span>
+  </div>
+  <span class="nav-tag">針と糸の変換ツール</span>
+</nav>
+
+<div class="container">
+
+  <!-- ヘッダー -->
+  <div class="header-card">
+    <div class="sticker-letters">
+      <span class="sl sl-A" style="animation-delay:.05s">A</span>
+      <span class="sl sl-M" style="animation-delay:.1s">m</span>
+      <span class="sl sl-I" style="animation-delay:.15s">i</span>
+      <span class="sl sl-C" style="animation-delay:.2s">c</span>
+      <span class="sl sl-O" style="animation-delay:.25s">o</span>
+      <div class="header-deco">
+        <span class="hdeco">✿</span>
+        <span class="hdeco">★</span>
+      </div>
+    </div>
+    <div class="header-sub">✦ 針と糸の変換ツール · 世界の手芸をつなぐ ✦</div>
+  </div>
+
+  <!-- 針サイズ変換 -->
+  <div class="sec-wrap">
+    <div class="sec-label">⇄ 針のサイズ変換</div>
+  </div>
+  <div class="card">
+    <div class="tape" style="background:rgba(255,206,0,.55);right:22px;transform:rotate(-2.5deg)"></div>
+    <div class="convert-grid">
+      <div class="input-wrap">
+        <span class="input-label" style="background:var(--c2);border-radius:10px 14px 12px 8px">日本 (号)</span>
+        <input class="pixel-input" id="jpNum" type="number" min="0" max="15" placeholder="5" oninput="convert('jp')">
+      </div>
+      <button class="swap-btn" onclick="swapMode()" title="入れ替え">
+        <svg viewBox="0 0 24 24"><path d="M7 16l-4-4 4-4M17 8l4 4-4 4M3 12h18"/></svg>
+      </button>
+      <div class="input-wrap">
+        <span class="input-label" style="background:var(--c5);color:#fff;border-radius:14px 10px 8px 12px">mm</span>
+        <input class="pixel-input" id="mmNum" type="number" step="0.1" placeholder="3.6" oninput="convert('mm')">
+      </div>
+    </div>
+    <div class="chip-row" id="chipRow"></div>
+    <button class="table-toggle" onclick="toggleTable()">
+      <span id="tableArrow">▼</span> 全サイズ一覧を見る（JP / mm / US / UK / KR）
+    </button>
+    <div class="full-table" id="fullTable">
+      <table class="conv-table">
+        <thead>
+          <tr><th>🇯🇵 日本(号)</th><th>📏 mm</th><th>🇺🇸 US</th><th>🇬🇧 UK</th><th>🇰🇷 KR(호)</th></tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+    <div class="affiliate-row" id="needleAff">
+      <a href="#" id="needleAffLink" target="_blank" rel="noopener sponsored" class="affiliate-btn">
+        <span class="amz-badge">Amazon</span>
+        <span id="needleAffText">この号数の棒針を探す →</span>
+      </a>
+      <span class="affiliate-note">※ Amazonアソシエイトプログラムによる広告リンクです</span>
+    </div>
+  </div>
+
+  <!-- 毛糸の太さ -->
+  <div class="sec-wrap">
+    <div class="sec-label" style="background:var(--c3)">✿ 毛糸の太さ</div>
+  </div>
+  <div class="card">
+    <div class="tape" style="background:rgba(255,92,168,.4);left:28px;transform:rotate(2deg)"></div>
+    <div class="yarn-grid" id="yarnGrid"></div>
+    <div class="yarn-detail" id="yarnDetail"></div>
+    <div class="affiliate-row" id="yarnAff">
+      <a href="#" id="yarnAffLink" target="_blank" rel="noopener sponsored" class="affiliate-btn">
+        <span class="amz-badge">Amazon</span>
+        <span id="yarnAffText">この太さの毛糸をAmazonで探す →</span>
+      </a>
+      <span class="affiliate-note">※ Amazonアソシエイトプログラムによる広告リンクです</span>
+    </div>
+  </div>
+
+  <!-- 段数カウンター -->
+  <div class="sec-wrap">
+    <div class="sec-label" style="background:var(--c1)">◉ 段数カウンター</div>
+  </div>
+  <div class="card">
+    <div class="tape" style="background:rgba(59,184,106,.45);right:44px;transform:rotate(-1deg)"></div>
+    <div class="counter-wrap">
+      <div class="counter-stage" id="cntDisplay">00</div>
+      <div class="counter-row">
+        <button class="cnt-btn cnt-reset" onclick="cntReset()">↺</button>
+        <button class="cnt-btn cnt-minus" onclick="cntDown()">−</button>
+        <button class="cnt-btn cnt-plus" onclick="cntUp()">+</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <a href="#" class="nav-item active">
+    <div class="nav-pip">⇄</div>
+    <div class="nav-label">変換</div>
+  </a>
+  <a href="#" class="nav-item">
+    <div class="nav-pip">✿</div>
+    <div class="nav-label">パターン</div>
+  </a>
+  <a href="#" class="nav-item">
+    <div class="nav-pip">◉</div>
+    <div class="nav-label">カウンター</div>
+  </a>
+  <a href="#" class="nav-item">
+    <div class="nav-pip">☆</div>
+    <div class="nav-label">マイ糸</div>
+  </a>
+</div>
+
+<script>
+// ===== 針データ（JP/mm/US/UK/KR） =====
+const TAG = 'YOURTAG-22'; // ← AmazonアソシエイトIDをここに入れる
+
+const needleData = [
+  {jp:0,  mm:2.0,  us:'0',    uk:'14', kr:'2호'},
+  {jp:1,  mm:2.4,  us:'1',    uk:'13', kr:'—'},
+  {jp:2,  mm:2.7,  us:'2',    uk:'12', kr:'3호'},
+  {jp:3,  mm:3.0,  us:'2.5',  uk:'11', kr:'4호'},
+  {jp:4,  mm:3.3,  us:'3',    uk:'10', kr:'—'},
+  {jp:5,  mm:3.6,  us:'4',    uk:'9',  kr:'5호'},
+  {jp:6,  mm:3.9,  us:'5',    uk:'8',  kr:'—'},
+  {jp:7,  mm:4.2,  us:'6',    uk:'7',  kr:'7호'},
+  {jp:8,  mm:4.5,  us:'7',    uk:'7',  kr:'8호'},
+  {jp:9,  mm:4.8,  us:'7',    uk:'6',  kr:'—'},
+  {jp:10, mm:5.1,  us:'8',    uk:'6',  kr:'10호'},
+  {jp:12, mm:5.7,  us:'9',    uk:'5',  kr:'12호'},
+  {jp:15, mm:6.6,  us:'10.5', uk:'3',  kr:'—'},
+];
+
+// 全サイズ一覧テーブル生成
+const tbody = document.getElementById('tableBody');
+needleData.forEach(r => {
+  const tr = document.createElement('tr');
+  tr.dataset.jp = r.jp;
+  tr.innerHTML = `<td>${r.jp}号</td><td>${r.mm}</td><td>${r.us}</td><td>${r.uk}</td><td>${r.kr}</td>`;
+  tbody.appendChild(tr);
+});
+
+function toggleTable(){
+  const t = document.getElementById('fullTable');
+  const a = document.getElementById('tableArrow');
+  t.classList.toggle('show');
+  a.textContent = t.classList.contains('show') ? '▲' : '▼';
+}
+
+function closestRow(mm){
+  return needleData.reduce((a,b) =>
+    Math.abs(b.mm - mm) < Math.abs(a.mm - mm) ? b : a
+  );
+}
+
+const chipDefs = [
+  {bg:'#FF4E4E', tx:'#fff',      flag:'🇯🇵'},
+  {bg:'#FFCE00', tx:'#1A1028',   flag:'📏'},
+  {bg:'#3BB86A', tx:'#fff',      flag:'🇺🇸'},
+  {bg:'#2F7FFF', tx:'#fff',      flag:'🇬🇧'},
+];
+
+function showChips(row){
+  const chipRow = document.getElementById('chipRow');
+  chipRow.innerHTML = '';
+  [
+    {label:`JP ${row.jp}号`},
+    {label:`${row.mm} mm`},
+    {label:`US ${row.us}`},
+    {label:`UK ${row.uk}`},
+  ].forEach((c,i) => {
+    const el = document.createElement('div');
+    el.className = 'chip';
+    el.style.cssText = `background:${chipDefs[i].bg};color:${chipDefs[i].tx}`;
+    el.innerHTML = `<span>${chipDefs[i].flag}</span>${c.label}`;
+    chipRow.appendChild(el);
+  });
+
+  // テーブルのハイライト
+  document.querySelectorAll('#tableBody tr').forEach(tr => {
+    tr.classList.toggle('highlight', parseInt(tr.dataset.jp) === row.jp);
+  });
+
+  // アフィリエイトリンク更新
+  const aff = document.getElementById('needleAff');
+  const affLink = document.getElementById('needleAffLink');
+  const affText = document.getElementById('needleAffText');
+  aff.classList.add('show');
+  affText.textContent = `${row.jp}号（${row.mm}mm）の棒針をAmazonで探す →`;
+  affLink.href = `https://www.amazon.co.jp/s?k=${encodeURIComponent('棒針 '+row.jp+'号 編み物')}&tag=${TAG}`;
+}
+
+function convert(from){
+  if(from === 'jp'){
+    const jp = parseInt(document.getElementById('jpNum').value);
+    const row = needleData.find(r => r.jp === jp);
+    if(row){ document.getElementById('mmNum').value = row.mm; showChips(row); }
+    else document.getElementById('chipRow').innerHTML = '';
+  } else {
+    const mm = parseFloat(document.getElementById('mmNum').value);
+    if(!isNaN(mm)){ const row = closestRow(mm); document.getElementById('jpNum').value = row.jp; showChips(row); }
+  }
+}
+
+function swapMode(){
+  const j = document.getElementById('jpNum').value;
+  const m = document.getElementById('mmNum').value;
+  document.getElementById('jpNum').value = m;
+  document.getElementById('mmNum').value = j;
+}
+
+// ===== 毛糸 =====
+const yarns = [
+  {name:'レース', mm:'〜2mm',  color:'#FF5CA8', rec:'0〜2号', detail:'繊細なレース編みに。英語パターンでは "lace weight" ✿', keyword:'レース糸 編み物'},
+  {name:'合細',  mm:'2〜3mm', color:'#FFCE00', rec:'2〜4号', detail:'靴下・手袋に最適。"fingering / sock weight" に相当！', keyword:'合細 毛糸 編み物'},
+  {name:'並太',  mm:'5〜6mm', color:'#3BB86A', rec:'5〜7号', detail:'定番の太さ。英語では "worsted weight" ★', keyword:'並太 毛糸 編み物'},
+  {name:'極太',  mm:'8mm〜',  color:'#2F7FFF', rec:'10〜15号',detail:'マフラー・ブランケット向き。"bulky weight" に相当！', keyword:'極太 毛糸 編み物'},
+];
+
+const yarnGrid = document.getElementById('yarnGrid');
+const yarnDetail = document.getElementById('yarnDetail');
+
+yarns.forEach(y => {
+  const el = document.createElement('div');
+  el.className = 'yarn-card';
+  el.innerHTML = `<div class="yarn-swatch" style="background:${y.color}"></div><div class="yarn-name">${y.name}</div><div class="yarn-mm">${y.mm}</div>`;
+  el.onclick = () => {
+    document.querySelectorAll('.yarn-card').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    yarnDetail.textContent = `推奨: ${y.rec} ／ ${y.detail}`;
+    yarnDetail.style.background = y.color + '33';
+    yarnDetail.classList.add('show');
+    const aff = document.getElementById('yarnAff');
+    const affLink = document.getElementById('yarnAffLink');
+    const affText = document.getElementById('yarnAffText');
+    aff.classList.add('show');
+    affText.textContent = `${y.name}の毛糸をAmazonで探す →`;
+    affLink.href = `https://www.amazon.co.jp/s?k=${encodeURIComponent(y.keyword)}&tag=${TAG}`;
+  };
+  yarnGrid.appendChild(el);
+});
+
+// ===== カウンター =====
+let cnt = 0;
+const disp = document.getElementById('cntDisplay');
+function upd(dir){
+  disp.textContent = String(cnt).padStart(2,'0');
+  disp.style.transform = dir > 0 ? 'scale(1.1) rotate(1deg)' : 'scale(.92) rotate(-1deg)';
+  setTimeout(() => disp.style.transform = 'scale(1) rotate(0)', 130);
+}
+function cntUp(){ cnt++; upd(1) }
+function cntDown(){ if(cnt > 0) cnt--; upd(-1) }
+function cntReset(){ cnt = 0; upd(0) }
+
+// ===== PWA =====
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
