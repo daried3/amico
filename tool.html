@@ -179,20 +179,6 @@ nav{
 }
 .affiliate-note{font-family:'Caveat',cursive;font-size:11px;color:#aaa}
 
-/* 書籍バナー */
-.book-scroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none;-ms-overflow-style:none}
-.book-scroll::-webkit-scrollbar{display:none}
-.book-card{flex-shrink:0;width:110px;background:var(--paper);border:3px solid var(--ink);border-radius:14px;box-shadow:3px 4px 0 var(--ink);overflow:hidden;text-decoration:none;color:var(--ink);transition:transform .1s,box-shadow .1s;display:flex;flex-direction:column}
-.book-card:hover{transform:translate(-2px,-3px);box-shadow:5px 7px 0 var(--ink)}
-.book-card:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
-.book-img-wrap{width:100%;height:130px;border-bottom:2.5px solid var(--ink);background:var(--bg);display:flex;align-items:center;justify-content:center;overflow:hidden}
-.book-img-wrap img{width:100%;height:100%;object-fit:cover}
-.book-emoji{font-size:2.5rem}
-.book-body{padding:6px 8px 8px;flex:1;display:flex;flex-direction:column;gap:3px}
-.book-title{font-family:'Fredoka One',cursive;font-size:10px;color:var(--ink);line-height:1.4}
-.book-amz{font-size:9px;padding:2px 6px;border-radius:4px;background:#FF9900;color:#fff;border:1.5px solid var(--ink);align-self:flex-start;margin-top:4px;font-family:'Fredoka One',cursive}
-.book-note{font-family:'Caveat',cursive;font-size:11px;color:#aaa;margin-top:6px}
-
 /* YARN */
 .yarn-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:.6rem}
 .yarn-card{
@@ -225,12 +211,83 @@ nav{
 
 /* COUNTER */
 .counter-wrap{text-align:center;padding:.5rem 0 .25rem}
+
+/* 目標設定エリア */
+.goal-row{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  margin-bottom:1rem;
+}
+.goal-label{font-family:'Fredoka One',cursive;font-size:13px;color:#888}
+.goal-input{
+  width:70px;background:var(--bg);
+  border:2.5px solid var(--ink);border-radius:10px;
+  padding:5px 10px;
+  font-family:'Caveat',cursive;font-size:18px;font-weight:700;
+  color:var(--ink);outline:none;text-align:center;
+  transition:box-shadow .12s;
+}
+.goal-input:focus{box-shadow:2px 2px 0 var(--ink)}
+.goal-input::placeholder{color:#ccc}
+.goal-clear{
+  font-family:'Fredoka One',cursive;font-size:11px;
+  color:#aaa;background:none;border:none;cursor:pointer;
+  text-decoration:underline;padding:0;
+}
+
+/* プログレスバー */
+.progress-wrap{
+  margin:0 auto .85rem;
+  width:calc(100% - 1rem);max-width:280px;
+  height:10px;background:var(--bg);
+  border:2.5px solid var(--ink);border-radius:20px;
+  overflow:hidden;box-shadow:2px 2px 0 var(--ink);
+}
+.progress-bar{
+  height:100%;background:var(--c3);
+  border-radius:20px;
+  transition:width .4s cubic-bezier(.34,1.56,.64,1),background .3s;
+  width:0%;
+}
+.progress-bar.goal-reached{background:var(--c5);animation:goalPulse .4s ease-out}
+@keyframes goalPulse{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.8)}}
+
+/* カウンター数字 */
 .counter-stage{
   font-family:'Fredoka One',cursive;font-size:5.5rem;
   color:var(--ink);line-height:1;
   text-shadow:5px 5px 0 var(--c5),8px 8px 0 rgba(0,0,0,.08);
-  margin-bottom:.85rem;display:inline-block;transition:transform .15s;
+  margin-bottom:.85rem;display:inline-block;
+  transition:transform .15s,color .3s,text-shadow .3s;
 }
+.counter-stage.goal-reached{
+  color:var(--c5);
+  text-shadow:5px 5px 0 var(--c2),8px 8px 0 rgba(0,0,0,.1);
+  animation:numberCelebrate .5s cubic-bezier(.34,1.8,.64,1);
+}
+@keyframes numberCelebrate{
+  0%{transform:scale(1)}
+  40%{transform:scale(1.18) rotate(2deg)}
+  100%{transform:scale(1) rotate(0)}
+}
+
+/* 達成バッジ */
+.goal-badge{
+  display:none;
+  font-family:'Fredoka One',cursive;font-size:13px;
+  background:var(--c5);color:#fff;
+  border:2.5px solid var(--ink);border-radius:20px;
+  padding:4px 16px;box-shadow:3px 3px 0 var(--ink);
+  margin:.5rem auto .75rem;
+  animation:badgePop .45s cubic-bezier(.34,1.8,.64,1);
+}
+.goal-badge.show{display:inline-block}
+@keyframes badgePop{0%{transform:scale(0) rotate(-10deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
+
+/* 紙吹雪コンテナ */
+.confetti-wrap{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:15px}
+.conf{position:absolute;font-size:16px;animation:confFall 1.2s ease-out forwards}
+@keyframes confFall{0%{transform:translateY(-10px) rotate(0);opacity:1}100%{transform:translateY(80px) rotate(360deg);opacity:0}}
+
 .counter-row{display:flex;justify-content:center;align-items:center;gap:14px}
 .cnt-btn{
   font-family:'Fredoka One',cursive;
@@ -243,8 +300,25 @@ nav{
 .cnt-minus:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
 .cnt-reset{width:42px;height:42px;font-size:18px;background:var(--paper);color:var(--ink);border-radius:12px;box-shadow:3px 4px 0 var(--ink)}
 .cnt-reset:hover{transform:translate(-1px,-2px);box-shadow:5px 6px 0 var(--ink)}
-.cnt-plus{width:68px;height:68px;font-size:36px;background:var(--c3);color:#fff;border-radius:20px;box-shadow:5px 5px 0 var(--ink)}
+.cnt-plus{width:68px;height:68px;font-size:36px;background:var(--c3);color:#fff;border-radius:20px;box-shadow:5px 5px 0 var(--ink);position:relative}
 .cnt-plus:hover{transform:translate(-2px,-3px);box-shadow:8px 8px 0 var(--ink)}
+
+/* カウンターフッター */
+.counter-footer{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  margin-top:.85rem;
+}
+.saved-indicator{
+  font-family:'Caveat',cursive;font-size:13px;color:#bbb;
+  transition:color .3s;display:flex;align-items:center;gap:4px;
+}
+.saved-dot{
+  width:7px;height:7px;border-radius:50%;background:#ccc;
+  transition:background .3s;display:inline-block;
+}
+.saved-indicator.saving .saved-dot{background:var(--c2);animation:pulse .4s ease-out}
+.saved-indicator.saved .saved-dot{background:var(--c3)}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.8)}100%{transform:scale(1)}}
 
 /* BOTTOM NAV */
 .bottom-nav{
@@ -293,20 +367,37 @@ nav{
 
 <div class="container">
 
-  <!-- ヘッダー -->
-  <div class="header-card">
-    <div class="sticker-letters">
-      <span class="sl sl-A" style="animation-delay:.05s">A</span>
-      <span class="sl sl-M" style="animation-delay:.1s">m</span>
-      <span class="sl sl-I" style="animation-delay:.15s">i</span>
-      <span class="sl sl-C" style="animation-delay:.2s">c</span>
-      <span class="sl sl-O" style="animation-delay:.25s">o</span>
-      <div class="header-deco">
-        <span class="hdeco">✿</span>
-        <span class="hdeco">★</span>
+  <!-- 段数カウンター（先頭） -->
+  <div class="sec-wrap">
+    <div class="sec-label" style="background:var(--c1)">◉ 段数カウンター</div>
+  </div>
+  <div class="card" id="counterCard">
+    <div class="confetti-wrap" id="confettiWrap"></div>
+    <div class="tape" style="background:rgba(59,184,106,.45);right:44px;transform:rotate(-1deg)"></div>
+    <div class="counter-wrap">
+      <div class="goal-row">
+        <span class="goal-label">目標</span>
+        <input class="goal-input" id="goalInput" type="number" min="1" placeholder="—" oninput="onGoalChange()">
+        <span class="goal-label">段</span>
+        <button class="goal-clear" onclick="clearGoal()">クリア</button>
+      </div>
+      <div class="progress-wrap" id="progressWrap" style="display:none">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      <div class="goal-badge" id="goalBadge">🎉 目標達成！お疲れさまでした ✿</div>
+      <div class="counter-stage" id="cntDisplay">00</div>
+      <div class="counter-row">
+        <button class="cnt-btn cnt-reset" onclick="cntReset()">↺</button>
+        <button class="cnt-btn cnt-minus" onclick="cntDown()">−</button>
+        <button class="cnt-btn cnt-plus" id="plusBtn" onclick="cntUp()">+</button>
+      </div>
+      <div class="counter-footer">
+        <div class="saved-indicator" id="savedIndicator">
+          <span class="saved-dot" id="savedDot"></span>
+          <span id="savedText">自動保存</span>
+        </div>
       </div>
     </div>
-    <div class="header-sub">世界の手芸をつなぐ</div>
   </div>
 
   <!-- 針サイズ変換 -->
@@ -330,7 +421,7 @@ nav{
     </div>
     <div class="chip-row" id="chipRow"></div>
     <button class="table-toggle" onclick="toggleTable()">
-      <span id="tableArrow">▼</span> 全サイズ一覧を見る
+      <span id="tableArrow">▼</span> 全サイズ一覧を見る（JP / mm / US / UK / KR）
     </button>
     <div class="full-table" id="fullTable">
       <table class="conv-table">
@@ -366,33 +457,6 @@ nav{
     </div>
   </div>
 
-  <!-- 編み物本バナー -->
-  <div class="sec-wrap">
-    <div class="sec-label" style="background:var(--c6)">📚 おすすめの編み物本</div>
-  </div>
-  <div class="card">
-    <div class="tape" style="background:rgba(151,71,255,.35);right:30px;transform:rotate(2deg)"></div>
-    <div class="book-scroll" id="bookScroll">
-      <!-- PA-API取得後に動的生成。現在は手動カード -->
-    </div>
-    <p class="book-note">※ Amazonアソシエイトプログラムによる広告リンクです</p>
-  </div>
-
-  <!-- 段数カウンター -->
-  <div class="sec-wrap">
-    <div class="sec-label" style="background:var(--c1)">◉ 段数カウンター</div>
-  </div>
-  <div class="card">
-    <div class="tape" style="background:rgba(59,184,106,.45);right:44px;transform:rotate(-1deg)"></div>
-    <div class="counter-wrap">
-      <div class="counter-stage" id="cntDisplay">00</div>
-      <div class="counter-row">
-        <button class="cnt-btn cnt-reset" onclick="cntReset()">↺</button>
-        <button class="cnt-btn cnt-minus" onclick="cntDown()">−</button>
-        <button class="cnt-btn cnt-plus" onclick="cntUp()">+</button>
-      </div>
-    </div>
-  </div>
 
 </div>
 
@@ -418,7 +482,7 @@ nav{
 
 <script>
 // ===== 針データ（JP/mm/US/UK/KR） =====
-const TAG = 'lilytube-22'; // ← AmazonアソシエイトIDをここに入れる
+const TAG = 'YOURTAG-22'; // ← AmazonアソシエイトIDをここに入れる
 
 const needleData = [
   {jp:0,  mm:2.0,  us:'0',    uk:'14', kr:'2호'},
@@ -545,61 +609,213 @@ yarns.forEach(y => {
   yarnGrid.appendChild(el);
 });
 
-// ===== カウンター =====
-let cnt = 0;
+// ===== カウンター（自動保存・目標・クリック音） =====
+const SAVE_KEY = 'amico_cnt';
+const GOAL_KEY = 'amico_goal';
+
+let cnt = parseInt(localStorage.getItem(SAVE_KEY) || '0');
+let goal = parseInt(localStorage.getItem(GOAL_KEY) || '0') || 0;
+let saveTimer = null;
+let goalJustReached = false;
+
 const disp = document.getElementById('cntDisplay');
-function upd(dir){
-  disp.textContent = String(cnt).padStart(2,'0');
-  disp.style.transform = dir > 0 ? 'scale(1.1) rotate(1deg)' : 'scale(.92) rotate(-1deg)';
-  setTimeout(() => disp.style.transform = 'scale(1) rotate(0)', 130);
+const goalInput = document.getElementById('goalInput');
+const progressWrap = document.getElementById('progressWrap');
+const progressBar = document.getElementById('progressBar');
+const goalBadge = document.getElementById('goalBadge');
+const savedIndicator = document.getElementById('savedIndicator');
+const savedDot = document.getElementById('savedDot');
+const savedText = document.getElementById('savedText');
+
+// 起動時に復元
+if(goal > 0) goalInput.value = goal;
+renderCounter(0);
+
+// ===== Web Audio でクリック音 =====
+let audioCtx = null;
+function getAudioCtx(){
+  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
 }
-function cntUp(){ cnt++; upd(1) }
-function cntDown(){ if(cnt > 0) cnt--; upd(-1) }
-function cntReset(){ cnt = 0; upd(0) }
 
-
-// ===== 書籍バナー（PA-API Worker連携） =====
-const WORKER_URL = 'https://amico-api.darie0726.workers.dev';
-
-async function loadBooks(keywords) {
-  keywords = keywords || '編み物 本';
-  const scroll = document.getElementById('bookScroll');
-  scroll.innerHTML = '<div style="font-family:Caveat,cursive;font-size:14px;color:#aaa;padding:1rem">📚 読み込み中...</div>';
+function playClick(type = 'up'){
   try {
-    const res = await fetch(WORKER_URL + '?keywords=' + encodeURIComponent(keywords));
-    const data = await res.json();
-    scroll.innerHTML = '';
-    if (!data.items || data.items.length === 0) {
-      scroll.innerHTML = '<div style="font-family:Caveat,cursive;font-size:14px;color:#aaa;padding:1rem">本が見つかりませんでした</div>';
-      return;
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    if(type === 'up'){
+      // iPod風：短い高めのトーン＋クリック感
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1200, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.04);
+      gain.gain.setValueAtTime(0.18, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.06);
+
+      // ノイズバースト（クリック感）
+      const noiseLen = ctx.sampleRate * 0.015;
+      const buf = ctx.createBuffer(1, noiseLen, ctx.sampleRate);
+      const data = buf.getChannelData(0);
+      for(let i=0;i<noiseLen;i++) data[i] = (Math.random()*2-1) * (1 - i/noiseLen);
+      const nSrc = ctx.createBufferSource();
+      const nGain = ctx.createGain();
+      nSrc.buffer = buf;
+      nGain.gain.value = 0.12;
+      nSrc.connect(nGain);
+      nGain.connect(ctx.destination);
+      nSrc.start(ctx.currentTime);
+
+    } else if(type === 'down'){
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(600, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.05);
+      gain.gain.setValueAtTime(0.12, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.07);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.07);
+
+    } else if(type === 'goal'){
+      // 達成音：明るいファンファーレ
+      [523, 659, 784, 1047].forEach((freq, i) => {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+        o.type = 'sine';
+        o.frequency.value = freq;
+        const t = ctx.currentTime + i * 0.12;
+        g.gain.setValueAtTime(0.2, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+        o.start(t); o.stop(t + 0.25);
+      });
+
+    } else if(type === 'reset'){
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(300, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.1);
+      gain.gain.setValueAtTime(0.1, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.1);
     }
-    data.items.forEach(function(book) {
-      const a = document.createElement('a');
-      a.className = 'book-card';
-      a.href = book.url;
-      a.target = '_blank';
-      a.rel = 'noopener sponsored';
-      const imgHtml = book.image
-        ? '<img src="' + book.image + '" alt="' + book.title + '" loading="lazy" style="width:100%;height:100%;object-fit:cover">'
-        : '<span class="book-emoji">📚</span>';
-      const priceHtml = book.price
-        ? '<div style="font-family:Caveat,cursive;font-size:11px;color:var(--c1);font-weight:700">' + book.price + '</div>'
-        : '';
-      a.innerHTML = '<div class="book-img-wrap">' + imgHtml + '</div>'
-        + '<div class="book-body">'
-        + '<div class="book-title">' + book.title + '</div>'
-        + priceHtml
-        + '<span class="book-amz">Amazon</span>'
-        + '</div>';
-      scroll.appendChild(a);
-    });
-  } catch(e) {
-    scroll.innerHTML = '<div style="font-family:Caveat,cursive;font-size:13px;color:#aaa;padding:1rem">読み込みに失敗しました</div>';
+  } catch(e){}
+}
+
+// ===== 紙吹雪 =====
+function spawnConfetti(){
+  const wrap = document.getElementById('confettiWrap');
+  wrap.innerHTML = '';
+  const symbols = ['✿','★','♥','✦','◉','🧶'];
+  const colors = ['var(--c1)','var(--c2)','var(--c3)','var(--c4)','var(--c5)','var(--c6)'];
+  for(let i=0;i<18;i++){
+    const el = document.createElement('span');
+    el.className = 'conf';
+    el.textContent = symbols[i % symbols.length];
+    el.style.cssText = `
+      left:${5 + Math.random()*90}%;
+      top:${Math.random()*30}%;
+      animation-delay:${Math.random()*0.4}s;
+      animation-duration:${0.9 + Math.random()*0.6}s;
+      color:${colors[i % colors.length]};
+      font-size:${12+Math.random()*10}px;
+    `;
+    wrap.appendChild(el);
+  }
+  setTimeout(() => wrap.innerHTML = '', 1800);
+}
+
+// ===== 自動保存 =====
+function scheduleSave(){
+  savedIndicator.className = 'saved-indicator saving';
+  savedText.textContent = '保存中...';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    localStorage.setItem(SAVE_KEY, cnt);
+    savedIndicator.className = 'saved-indicator saved';
+    savedText.textContent = '保存済み ✓';
+    setTimeout(() => {
+      savedIndicator.className = 'saved-indicator';
+      savedText.textContent = '自動保存';
+    }, 1500);
+  }, 400);
+}
+
+// ===== プログレス更新 =====
+function updateProgress(){
+  if(goal <= 0){ progressWrap.style.display = 'none'; return; }
+  progressWrap.style.display = 'block';
+  const pct = Math.min(100, (cnt / goal) * 100);
+  progressBar.style.width = pct + '%';
+
+  const reached = cnt >= goal;
+  progressBar.classList.toggle('goal-reached', reached);
+  goalBadge.classList.toggle('show', reached);
+  disp.classList.toggle('goal-reached', reached);
+
+  if(reached && !goalJustReached){
+    goalJustReached = true;
+    playClick('goal');
+    spawnConfetti();
+  } else if(!reached){
+    goalJustReached = false;
   }
 }
 
-// ページ読み込み時に書籍を取得
-loadBooks('編み物 本');
+// ===== 表示更新 =====
+function renderCounter(dir){
+  disp.textContent = String(cnt).padStart(2,'0');
+  if(dir !== 0){
+    disp.style.transform = dir > 0
+      ? 'scale(1.1) rotate(1deg)'
+      : 'scale(.92) rotate(-1deg)';
+    setTimeout(() => disp.style.transform = '', 130);
+  }
+  updateProgress();
+}
+
+// ===== 操作 =====
+function cntUp(){
+  cnt++;
+  playClick('up');
+  renderCounter(1);
+  scheduleSave();
+}
+function cntDown(){
+  if(cnt > 0){ cnt--; playClick('down'); renderCounter(-1); scheduleSave(); }
+}
+function cntReset(){
+  cnt = 0;
+  goalJustReached = false;
+  playClick('reset');
+  renderCounter(0);
+  scheduleSave();
+  goalBadge.classList.remove('show');
+  disp.classList.remove('goal-reached');
+}
+
+// ===== 目標段数 =====
+function onGoalChange(){
+  goal = parseInt(goalInput.value) || 0;
+  if(goal > 0) localStorage.setItem(GOAL_KEY, goal);
+  else localStorage.removeItem(GOAL_KEY);
+  goalJustReached = false;
+  goalBadge.classList.remove('show');
+  disp.classList.remove('goal-reached');
+  updateProgress();
+}
+function clearGoal(){
+  goalInput.value = '';
+  goal = 0;
+  localStorage.removeItem(GOAL_KEY);
+  goalJustReached = false;
+  progressWrap.style.display = 'none';
+  goalBadge.classList.remove('show');
+  disp.classList.remove('goal-reached');
+  progressBar.style.width = '0%';
+}
 
 // ===== PWA =====
 if('serviceWorker' in navigator){
